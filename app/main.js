@@ -1,9 +1,20 @@
 import { createServer } from "net";
 
-// You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
 
-// Uncomment this to pass the first stage
+class StatusLine {
+
+    constructor(statusCode, description) {
+	this.version = 'HTTP/1.1';
+	this.statusCode = statusCode;
+	this.description = description;
+    }
+
+    toString() {
+	return [this.version, this.statusCode, this.description].join(' ');
+    }
+}
+
 const server = createServer((socket) => {
     socket.on("close", () => {
 	console.log('on close');
@@ -20,7 +31,8 @@ const server = createServer((socket) => {
 
     socket.on('data', (buffer) => {
 	console.log(`data: ${buffer}`);
-	socket.write("hello client");
+	const header = new StatusLine(200, 'OK');
+	socket.write(`${header}\r\n\r\n`);
     });
  
 });
