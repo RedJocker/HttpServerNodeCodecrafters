@@ -9,6 +9,7 @@
     "keywords": [
         "build-your-own-x"
     ],
+    "type": "module",
     "author": "",
     "license": "MIT",
     "dependencies": {}
