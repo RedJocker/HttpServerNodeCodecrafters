@@ -1,3 +1,6 @@
+import { Body } from "./body.js";
+import { Header } from "./header.js";
+
 class RequestLine {
 
     constructor({httpMethod, path, version}) {
@@ -15,6 +18,7 @@ class RequestLine {
     /**
      *  Creates a RequestLine instance consuming a Buffer instance
      *  @param {Buffer} buffer - A buffer used to parse a RequestLine
+     *  @returns {{requestLine: RequestLine, newOffset: number}} {requestLine, newOffset}
      */  
     static fromBuffer(buffer, offset) {
         const index = buffer.findIndex((c, index, obj) => {
@@ -37,17 +41,42 @@ class RequestLine {
             path: lineSplit[1],
             verion: lineSplit[2]
         });
-        const newOffset = index + 2;
+        const newOffset = index + 1;
         return {requestLine, newOffset};
     }
 }
 
 class Request {
-    constructor(line, header, body) {
-        this.line = line;
+    constructor(requestLine, header, body) {
+        this.requestLine = requestLine;
         this.header = header;
         this.body = body;
     }
+
+    /**
+     *  Creates a Request instance consuming a Buffer instance
+     *  @param {Buffer} buffer - A buffer used to parse a Request
+     *  @returns {Request | null} request?
+     */
+    static fromBuffer(buffer) {
+        const {requestLine, newOffset: headerOffset } =
+              RequestLine.fromBuffer(buffer, 0);
+        const {header, newOffset: bodyOffset} = headerOffset < 0 ?
+                  new Header()
+                  : Header.fromBuffer(buffer, headerOffset);
+        const maybeContentLen = Number(header['Content-Length']) ?? 0;
+        const contentLen = isNaN(maybeContentLen) ? 0 : maybeContentLen;
+        const body = bodyOffset < 0 || contentLen == 0 ?
+                  new Body('')
+                  : Body.fromBuffer(buffer, bodyOffset, contentLen);
+        return new Request(requestLine, header, body);
+    }
+
+    toString() {
+        return [this.requestLine, this.header, this.body]
+            .map(e => e.toString())
+            .join('\r\n');
+    }
 }
 
-export { RequestLine }
+export { Request, RequestLine }

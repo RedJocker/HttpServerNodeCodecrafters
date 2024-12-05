@@ -1,19 +1,35 @@
 import { ResponseBuilder } from "./response.js";
 import { Response } from "./response.js";
+import { Request } from "./request.js";
 
 class Controller {
 
     /**
      *  Serve requests
-     *  @param {RequestLine} requestLine - The request
+     *  @param {Request} request - The request
      *  @returns {Response} - The response
      */
-    serve(requestLine) {
+    serve(request) {
+        const requestLine = request.requestLine;
         console.log(`serve ${requestLine}`);
         if (requestLine.path === "/") {
             if (requestLine.httpMethod === "GET"){
                 const response = new ResponseBuilder()
                       .status(200, 'OK')
+                      .build();
+                return response;
+            }
+        }
+        if (requestLine.path === "/user-agent") {
+            if (requestLine.httpMethod === "GET"){
+                const userAgent = request.header['User-Agent'];
+                const response = !userAgent ?
+                      new ResponseBuilder()
+                      .status(400, 'Bad Request')
+                      .build()
+                      : new ResponseBuilder()
+                      .status(200, 'OK')
+                      .body(userAgent)
                       .build();
                 return response;
             }
@@ -33,6 +49,5 @@ class Controller {
             .build();
     }
 }
-import { RequestLine } from "./request.js";
 
 export { Controller };

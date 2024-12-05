@@ -1,7 +1,7 @@
 import { createServer } from "net";
 import { EventEmitter } from 'node:events';
 import { Controller } from "./controller.js";
-import { RequestLine } from "./request.js";
+import { Request } from "./request.js";
 import { Buffer } from "node:buffer";
 
 console.log("Logs from your program will appear here!");
@@ -35,15 +35,14 @@ const server = createServer((socket) => {
 
     socket.on('data', (buffer) => {
         console.log(`data: ${buffer}`);
-        const {requestLine, newOffset: headerOffset } =
-                  RequestLine.fromBuffer(buffer, 0);
-        console.log(`pipeline emit request ${requestLine}`);
+        const request = Request.fromBuffer(buffer);
+        console.log(`pipeline emit request ${request}`);
         pipeline.on('response', (response) => {
             console.log(`pipeline on response ${response}`);
             socket.write(response);
             socket.end();
         });
-        pipeline.emit('request', requestLine);
+        pipeline.emit('request', request);
     });
  
 });
