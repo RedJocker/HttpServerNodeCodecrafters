@@ -3,19 +3,26 @@ import { EventEmitter } from 'node:events';
 import { Controller } from "./controller.js";
 import { Request } from "./request.js";
 import { Buffer } from "node:buffer";
+import { FileService } from "./fileService.js";
 
 console.log("Logs from your program will appear here!");
+const fileServiceDir = process.argv[3];
+
 const pipeline = new EventEmitter();
-const controller = new Controller();
+const fileService = new FileService(fileServiceDir);
+const controller = new Controller(fileService);
+
 
 
 pipeline.on('request', (request) => {
-    console.log(`pipeline on request ${request}`);
-    const response = controller.serve(request);
-    //const buffer = Buffer.from(response.toString());
-    //buffer.forEach(n => console.log(n));
-    console.log(`pipeline emit response ${response}`);
-    pipeline.emit('response', response.toString());
+    (async () => {
+	console.log(`pipeline on request ${request}`);
+	const response = await controller.serve(request);
+	//const buffer = Buffer.from(response.toString());
+	//buffer.forEach(n => console.log(n));
+	console.log(`pipeline emit response ${response}`);
+	pipeline.emit('response', response.toString());
+    })();
 });
 
 

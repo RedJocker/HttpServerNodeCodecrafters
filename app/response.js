@@ -60,6 +60,14 @@ class ResponseBuilder {
         return this;
     }
 
+    bodyOctetStream = (content) => {
+        const len = content.length;
+        this.#body = new Body(content);
+        this.#header.addHeader('Content-Type', 'application/octet-stream');
+        this.#header.addHeader('Content-Length', len);
+        return this;
+    }
+
     addHeader = (key, value) => {
         this.#header.addHeader(key, value);
         return this;
