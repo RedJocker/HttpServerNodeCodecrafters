@@ -11,7 +11,7 @@ class Body {
     }
 
     toString() {
-        return `${this.content ?? ''}`;
+        return `${this.content?.toString('utf8') ?? ''}`;
     }
 
     /**

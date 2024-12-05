@@ -67,6 +67,21 @@ class Controller {
                     return response;
 		}
             }
+	    if (requestLine.httpMethod === "POST"){
+		const contentType = request.header['Content-Type'] ?? ''
+		if (contentType == 'application/octet-stream') {
+		    const ok = await this.fileService
+			  .writeBufferToFile(pathArg, request.body.content)
+		    const response = ok ?
+			  new ResponseBuilder()
+			  .status(201, 'Created')
+			  .build()
+			  : new ResponseBuilder()
+			  .status(500, 'Internal Server Error')
+			  .build();
+                    return response;
+		}
+            }
         }
 
         return new ResponseBuilder()
