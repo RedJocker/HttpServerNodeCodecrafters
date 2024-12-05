@@ -9,9 +9,9 @@ const pipeline = new EventEmitter();
 const controller = new Controller();
 
 
-pipeline.on('request', (requestLine) => {
-    console.log(`pipeline on request ${requestLine}`);
-    const response = controller.serve(requestLine);
+pipeline.on('request', (request) => {
+    console.log(`pipeline on request ${request}`);
+    const response = controller.serve(request);
     //const buffer = Buffer.from(response.toString());
     //buffer.forEach(n => console.log(n));
     console.log(`pipeline emit response ${response}`);

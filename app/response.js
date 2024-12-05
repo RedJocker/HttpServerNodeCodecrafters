@@ -51,10 +51,10 @@ class ResponseBuilder {
         return this;
     }
 
-    body = (content) => {
-        const contentStr = `${content}`;
-        const len = contentStr.length;
-        this.#body.content = contentStr;
+    bodyTextPlain = (content) => {
+        const contentBuffer = Buffer.from(content);
+        const len = contentBuffer.length;
+        this.#body = new Body(contentBuffer);
         this.#header.addHeader('Content-Type', 'text/plain');
         this.#header.addHeader('Content-Length', len);
         return this;

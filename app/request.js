@@ -67,7 +67,7 @@ class Request {
         const maybeContentLen = Number(header['Content-Length']) ?? 0;
         const contentLen = isNaN(maybeContentLen) ? 0 : maybeContentLen;
         const body = bodyOffset < 0 || contentLen == 0 ?
-                  new Body('')
+                  Body.fromString('')
                   : Body.fromBuffer(buffer, bodyOffset, contentLen);
         return new Request(requestLine, header, body);
     }

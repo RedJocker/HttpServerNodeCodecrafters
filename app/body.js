@@ -1,4 +1,11 @@
+import { Buffer } from 'node:buffer';
+
 class Body {
+
+    /**
+     *  Creates a Body instance with content as buffer
+     *  @param {Buffer} content - the content of the body
+     */
     constructor(content) {
         this.content = content;
     }
@@ -15,8 +22,18 @@ class Body {
      *  @returns {Body} body
      */
     static fromBuffer(buffer, offset, contentLength) {
-        const content = buffer.subarray(offset).toString('ascii')
+        const content = buffer.subarray(offset, offset + contentLength);
         return new Body(content);
+    }
+
+    /**
+     *  Creates a Body instance with string content as body content
+     *  @param {string} content - the content of the body as string
+     *  @returns {Body} body
+     */
+    static fromString(content) {
+        const contentBuffer = Buffer.from(content);
+        return new Body(contentBuffer);
     }
 }
 

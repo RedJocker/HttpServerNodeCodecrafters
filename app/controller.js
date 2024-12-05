@@ -29,7 +29,7 @@ class Controller {
                       .build()
                       : new ResponseBuilder()
                       .status(200, 'OK')
-                      .body(userAgent)
+                      .bodyTextPlain(userAgent)
                       .build();
                 return response;
             }
@@ -39,7 +39,7 @@ class Controller {
             if (requestLine.httpMethod === "GET"){
                 const response = new ResponseBuilder()
                       .status(200, 'OK')
-                      .body(pathArg)
+                      .bodyTextPlain(pathArg)
                       .build();
                 return response;
             }
