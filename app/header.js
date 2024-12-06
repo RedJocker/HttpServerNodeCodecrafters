@@ -1,10 +1,11 @@
 class Header {
+
     addHeader(key, value) {
         this[key] = value;
     }
 
     toString() {
-        const keys = Object.keys(this);
+        const keys = Object.keys(this).filter(k => k !== "acceptsGzip");
         if(keys.length == 0)
             return '';
         else

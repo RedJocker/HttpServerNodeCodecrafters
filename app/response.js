@@ -1,5 +1,7 @@
 import { Header } from "./header.js";
 import { Body } from "./body.js";
+import zlib from "node:zlib";
+import { Buffer } from "node:buffer";
 
 class StatusLine {
 
@@ -26,6 +28,15 @@ class Response {
             .map(e => e.toString())
             .join('\r\n');
     }
+
+    toBuffer() {
+	const preBodyStr = [this.statusLine, this.header, '']
+            .map(e => e.toString())
+              .join('\r\n');
+	const buffers = [Buffer.from(preBodyStr), this.body.content];
+	const totalLen = buffers.reduce((a, c) => a + c.length, 0);
+	return Buffer.concat(buffers, totalLen);
+    }
 }
 
 class ResponseBuilder {
@@ -42,7 +53,7 @@ class ResponseBuilder {
         /** @var {Header} header - response header */
         this.#header = new Header();
         /** @var {Body} body - response body */
-        this.#body = new Body();
+        this.#body = new Body(Buffer.from(''));
         this.#header.addHeader('Connection', 'close');
     }
 
@@ -52,15 +63,18 @@ class ResponseBuilder {
     }
 
     bodyTextPlain = (content, compression) => {
-	const isGzip = compression === 'gzip';
-	const contentMaybeCompressed = isGzip ?
-	      Buffer.from(content).toString('hex')
-	      : content;
-        const contentBuffer = Buffer.from(contentMaybeCompressed);
-        const len = contentBuffer.length;
-        this.#body = new Body(contentBuffer);
-	if (isGzip)
-	    this.#header.addHeader('Content-Encoding', 'gzip');
+        const isGzip = compression === 'gzip';
+	console.log(content);
+        const contentBufferMaybeCompressed = isGzip
+              ? zlib.gzipSync(content,
+			      {strategy: zlib.constants.Z_DEFAULT_STRATEGY,
+			       level: 7})
+              : Buffer.from(content);
+	console.log(contentBufferMaybeCompressed);
+        const len = contentBufferMaybeCompressed.length;
+        this.#body = new Body(contentBufferMaybeCompressed);
+        if (isGzip)
+            this.#header.addHeader('Content-Encoding', 'gzip');
         this.#header.addHeader('Content-Type', 'text/plain');
         this.#header.addHeader('Content-Length', len);
         return this;

@@ -16,12 +16,12 @@ const controller = new Controller(fileService);
 
 pipeline.on('request', (request) => {
     (async () => {
-	console.log(`pipeline on request ${request}`);
-	const response = await controller.serve(request);
-	//const buffer = Buffer.from(response.toString());
-	//buffer.forEach(n => console.log(n));
-	console.log(`pipeline emit response ${response}`);
-	pipeline.emit('response', response.toString());
+        console.log(`pipeline on request ${request}`);
+        const response = await controller.serve(request);
+        //const buffer = Buffer.from(response.toString());
+        //buffer.forEach(n => console.log(n));
+        console.log(`pipeline emit response ${response}`);
+        pipeline.emit('response', response.toBuffer());
     })();
 });
 

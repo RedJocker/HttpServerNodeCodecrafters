@@ -12,7 +12,7 @@ class Controller {
      * @param {FileService} fileService - The instance that will deal with files
      */
     constructor(fileService) {
-	this.fileService = fileService
+        this.fileService = fileService
     }
 
     /**
@@ -33,9 +33,9 @@ class Controller {
         }
         if (requestLine.path === "/user-agent") {
             if (requestLine.httpMethod === "GET"){
-		const compression = request.header.acceptsGzip()
-		      ? 'gzip'
-		      : ''
+                const compression = request.header.acceptsGzip()
+                      ? 'gzip'
+                      : ''
                 const userAgent = request.header['User-Agent'];
                 const response = !userAgent ?
                       new ResponseBuilder()
@@ -51,9 +51,9 @@ class Controller {
         if (requestLine.path.startsWith('/echo/')) {
             const pathArg = requestLine.path.substring('/echo/'.length)
             if (requestLine.httpMethod === "GET"){
-		const compression = request.header.acceptsGzip()
-		      ? 'gzip'
-		      : ''
+                const compression = request.header.acceptsGzip()
+                      ? 'gzip'
+                      : ''
                 const response = new ResponseBuilder()
                       .status(200, 'OK')
                       .bodyTextPlain(pathArg, compression)
@@ -61,32 +61,32 @@ class Controller {
                 return response;
             }
         }
-	if (requestLine.path.startsWith('/files/')) {
+        if (requestLine.path.startsWith('/files/')) {
             const pathArg = requestLine.path.substring('/files/'.length)
             if (requestLine.httpMethod === "GET"){
-		const fileBuffer = await this.fileService.fileAsBuffer(pathArg)
-		if (fileBuffer) {
-		    const response = new ResponseBuilder()
+                const fileBuffer = await this.fileService.fileAsBuffer(pathArg)
+                if (fileBuffer) {
+                    const response = new ResponseBuilder()
                       .status(200, 'OK')
                       .bodyOctetStream(fileBuffer)
                       .build();
                     return response;
-		}
+                }
             }
-	    if (requestLine.httpMethod === "POST"){
-		const contentType = request.header['Content-Type'] ?? ''
-		if (contentType == 'application/octet-stream') {
-		    const ok = await this.fileService
-			  .writeBufferToFile(pathArg, request.body.content)
-		    const response = ok ?
-			  new ResponseBuilder()
-			  .status(201, 'Created')
-			  .build()
-			  : new ResponseBuilder()
-			  .status(500, 'Internal Server Error')
-			  .build();
+            if (requestLine.httpMethod === "POST"){
+                const contentType = request.header['Content-Type'] ?? ''
+                if (contentType == 'application/octet-stream') {
+                    const ok = await this.fileService
+                          .writeBufferToFile(pathArg, request.body.content)
+                    const response = ok ?
+                          new ResponseBuilder()
+                          .status(201, 'Created')
+                          .build()
+                          : new ResponseBuilder()
+                          .status(500, 'Internal Server Error')
+                          .build();
                     return response;
-		}
+                }
             }
         }
 
