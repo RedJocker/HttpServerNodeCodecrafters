@@ -4,12 +4,20 @@ class Header {
     }
 
     toString() {
-        const keys = Object.keys(this)
+        const keys = Object.keys(this);
         if(keys.length == 0)
-            return ''
+            return '';
         else
             return keys.map((k) => `${k}: ${this[k]}`)
                        .join("\r\n") + '\r\n';
+    }
+
+    acceptsGzip = () => {
+	/** @type {string} encodingHeader */
+	const encodingHeader = this['Accept-Encoding'] ?? '';
+	const encodingArr = encodingHeader.split(',')
+		  .map(s => s.trim().toLowerCase());
+	return encodingArr.includes('gzip');
     }
 
     /**

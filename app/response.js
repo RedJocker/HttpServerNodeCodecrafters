@@ -51,10 +51,16 @@ class ResponseBuilder {
         return this;
     }
 
-    bodyTextPlain = (content) => {
-        const contentBuffer = Buffer.from(content);
+    bodyTextPlain = (content, compression) => {
+	const isGzip = compression === 'gzip';
+	const contentMaybeCompressed = isGzip ?
+	      Buffer.from(content).toString('hex')
+	      : content;
+        const contentBuffer = Buffer.from(contentMaybeCompressed);
         const len = contentBuffer.length;
         this.#body = new Body(contentBuffer);
+	if (isGzip)
+	    this.#header.addHeader('Content-Encoding', 'gzip');
         this.#header.addHeader('Content-Type', 'text/plain');
         this.#header.addHeader('Content-Length', len);
         return this;

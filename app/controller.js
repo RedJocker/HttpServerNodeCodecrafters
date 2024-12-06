@@ -33,6 +33,9 @@ class Controller {
         }
         if (requestLine.path === "/user-agent") {
             if (requestLine.httpMethod === "GET"){
+		const compression = request.header.acceptsGzip()
+		      ? 'gzip'
+		      : ''
                 const userAgent = request.header['User-Agent'];
                 const response = !userAgent ?
                       new ResponseBuilder()
@@ -40,7 +43,7 @@ class Controller {
                       .build()
                       : new ResponseBuilder()
                       .status(200, 'OK')
-                      .bodyTextPlain(userAgent)
+                      .bodyTextPlain(userAgent, compression)
                       .build();
                 return response;
             }
@@ -48,9 +51,12 @@ class Controller {
         if (requestLine.path.startsWith('/echo/')) {
             const pathArg = requestLine.path.substring('/echo/'.length)
             if (requestLine.httpMethod === "GET"){
+		const compression = request.header.acceptsGzip()
+		      ? 'gzip'
+		      : ''
                 const response = new ResponseBuilder()
                       .status(200, 'OK')
-                      .bodyTextPlain(pathArg)
+                      .bodyTextPlain(pathArg, compression)
                       .build();
                 return response;
             }
